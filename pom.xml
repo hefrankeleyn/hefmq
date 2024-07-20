@@ -17,6 +17,7 @@
     <properties>
         <java.version>17</java.version>
         <junit.version>4.13.2</junit.version>
+        <guava.version>33.2.0-jre</guava.version>
     </properties>
     <dependencies>
         <dependency>
@@ -29,6 +30,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
