@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @Date 2024/7/20
@@ -11,6 +12,7 @@ import java.util.Map;
  */
 public class HefMessage<M> {
 
+    private static final AtomicLong idGenerator = new AtomicLong(1);
     // 只能复制不能修改，根据id 识别出是不同的消息
     private Long id;
     // 消息体
@@ -26,6 +28,13 @@ public class HefMessage<M> {
         this.id = id;
         this.body = body;
     }
+
+    public HefMessage(M body) {
+        this.id = idGenerator.getAndIncrement();
+        this.body = body;
+    }
+
+
 
     public Long getId() {
         return id;
