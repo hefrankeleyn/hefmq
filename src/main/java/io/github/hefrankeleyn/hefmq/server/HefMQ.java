@@ -44,14 +44,14 @@ public class HefMQ {
     public static void subscribeTopic(String topic, String consumerId) {
         HefMQ hefMQ = topicMQMap.get(topic);
         if (Objects.nonNull(hefMQ)) {
-            hefMQ.unsubscribe(consumerId);
+            hefMQ.subscribe(topic, consumerId);
         }
     }
 
     public static void unsubscribeTopic(String topic, String consumerId) {
         HefMQ hefMQ = topicMQMap.get(topic);
         checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
-        hefMQ.subscribe(topic, consumerId);
+        hefMQ.unsubscribe(consumerId);
     }
 
     public static Integer sendMessage(String topic, HefMessage<?> message) {
