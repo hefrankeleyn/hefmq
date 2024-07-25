@@ -1,4 +1,4 @@
-package io.github.hefrankeleyn.hefmq.core;
+package io.github.hefrankeleyn.hefmq.model;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;

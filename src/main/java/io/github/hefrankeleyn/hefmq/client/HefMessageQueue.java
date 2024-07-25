@@ -1,7 +1,8 @@
-package io.github.hefrankeleyn.hefmq.core;
+package io.github.hefrankeleyn.hefmq.client;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
 
 import java.util.List;
 import java.util.Objects;

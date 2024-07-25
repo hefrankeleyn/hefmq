@@ -1,4 +1,6 @@
-package io.github.hefrankeleyn.hefmq.core;
+package io.github.hefrankeleyn.hefmq.client;
+
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
 
 import static com.google.common.base.Preconditions.*;
 

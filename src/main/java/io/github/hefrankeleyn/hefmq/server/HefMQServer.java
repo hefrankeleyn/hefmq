@@ -1,7 +1,7 @@
 package io.github.hefrankeleyn.hefmq.server;
 
 
-import io.github.hefrankeleyn.hefmq.core.HefMessage;
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import io.github.hefrankeleyn.hefmq.model.Result;
 import org.springframework.web.bind.annotation.*;
 

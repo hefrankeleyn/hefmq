@@ -3,7 +3,7 @@ package io.github.hefrankeleyn.hefmq.server;
 import com.google.common.base.MoreObjects;
 import static com.google.common.base.Preconditions.*;
 import com.google.common.collect.Maps;
-import io.github.hefrankeleyn.hefmq.core.HefMessage;
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import io.github.hefrankeleyn.hefmq.model.MessageSubscription;
 
 import java.util.Map;

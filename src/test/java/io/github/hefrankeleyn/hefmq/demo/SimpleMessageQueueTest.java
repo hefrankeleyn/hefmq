@@ -1,10 +1,10 @@
 package io.github.hefrankeleyn.hefmq.demo;
 
 import io.github.hefrankeleyn.hefmq.bean.Order;
-import io.github.hefrankeleyn.hefmq.core.HefBroker;
-import io.github.hefrankeleyn.hefmq.core.HefConsumer;
-import io.github.hefrankeleyn.hefmq.core.HefMessage;
-import io.github.hefrankeleyn.hefmq.core.HefProducer;
+import io.github.hefrankeleyn.hefmq.client.HefBroker;
+import io.github.hefrankeleyn.hefmq.client.HefConsumer;
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
+import io.github.hefrankeleyn.hefmq.client.HefProducer;
 import org.junit.Test;
 
 import java.util.Objects;
