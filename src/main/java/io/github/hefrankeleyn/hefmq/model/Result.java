@@ -20,6 +20,10 @@ public class Result<T> {
         return new Result<>(data, CodeEnum.SUCCESS.code);
     }
 
+    public boolean isSuccess() {
+        return code == CodeEnum.SUCCESS.code;
+    }
+
     public enum CodeEnum {
         SUCCESS(1), FAIL(0);
         final int code;
@@ -27,5 +31,21 @@ public class Result<T> {
         CodeEnum(int code) {
             this.code = code;
         }
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 }

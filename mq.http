@@ -1,0 +1,38 @@
+### send
+POST http://localhost:8765/hefmq/send?topic=aa
+Content-Type: application/json
+
+{
+  "id": 4,
+  "body": "hello mq!"
+}
+
+
+### subscribe
+POST http://localhost:8765/hefmq/subscribe?topic=aa&consumerId=cs01
+Content-Type: application/json
+
+{
+}
+
+### unsubscribe
+POST http://localhost:8765/hefmq/unsubscribe?topic=aa&consumerId=cs01
+Content-Type: application/json
+
+{
+}
+
+### receive
+POST http://localhost:8765/hefmq/receive?topic=aa&consumerId=cs01
+Content-Type: application/json
+
+{
+}
+
+
+### ack
+POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=2
+Content-Type: application/json
+
+{
+}

@@ -1,10 +1,8 @@
 package io.github.hefrankeleyn.hefmq.client;
 
 import com.google.common.base.MoreObjects;
-import io.github.hefrankeleyn.hefmq.model.HefMessage;
-
 import static com.google.common.base.Preconditions.*;
-
+import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,7 +15,7 @@ public class HefConsumer {
     private static AtomicLong idGenerator = new AtomicLong(0);
     private String id;
     private final HefBroker hefBroker;
-    private HefMessageQueue messageQueue;
+    private String topic;
 
     public HefConsumer(HefBroker hefBroker) {
         this.hefBroker = hefBroker;
@@ -25,17 +23,36 @@ public class HefConsumer {
     }
 
     public void subscribe(String topic) {
-        this.messageQueue = hefBroker.findMessageQueue(topic);
-        checkState(Objects.nonNull(messageQueue), "topic [%s] not found", topic);
+        this.topic = topic;
+        hefBroker.subscribe(topic, id);
     }
 
-    public HefMessage<?> poll(long timeout) {
-        checkState(Objects.nonNull(messageQueue), "Please subscribe first");
-        return messageQueue.poll(timeout);
+    public void unsubscribe() {
+        checkState(Objects.nonNull(topic) && !topic.isBlank(), "Please subscribe topic first: %s", topic);
+        hefBroker.unsubscribe(topic, id);
+    }
+
+
+
+    public HefMessage<?> receive() {
+        checkState(Objects.nonNull(topic) && !topic.isBlank(), "Please subscribe topic first: %s", topic);
+        return hefBroker.receive(topic, id);
+    }
+
+    public void ack(int offset) {
+        checkState(Objects.nonNull(topic) && !topic.isBlank(), "Please subscribe topic first: %s", topic);
+        hefBroker.ack(topic, id, offset);
+    }
+
+    public void ackMessage(HefMessage<?> hefMessage) {
+        if (Objects.isNull(hefMessage)) {
+            return;
+        }
+        int offset = Integer.parseInt(hefMessage.getHeaders().get(HefMessage.OFFSET_KEY));
+        ack(offset);
     }
 
     public void addMessageListener(HefMessageListener hefMessageListener) {
-        this.messageQueue.listener(hefMessageListener);
     }
 
     public String getId() {
@@ -46,10 +63,21 @@ public class HefConsumer {
         this.id = id;
     }
 
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(HefConsumer.class)
                 .add("id", id)
+                .add("topic", topic)
                 .toString();
     }
+
+
 }

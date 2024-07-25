@@ -3,4 +3,7 @@ spring:
     name: hefmq
 server:
   port: 8765
-
+logging:
+  level:
+    root: error
+    io.github.hefrankeleyn.hefmq: debug

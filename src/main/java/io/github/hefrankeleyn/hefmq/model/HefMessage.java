@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class HefMessage<M> {
 
+    public static final String OFFSET_KEY = "X-offset";
+
     private static final AtomicLong idGenerator = new AtomicLong(1);
     // 只能复制不能修改，根据id 识别出是不同的消息
     private Long id;

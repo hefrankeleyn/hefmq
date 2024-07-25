@@ -8,6 +8,7 @@ import java.util.Objects;
 
 /**
  * 消息生产者
+ *
  * @Date 2024/7/20
  * @Author lifei
  */
@@ -19,9 +20,9 @@ public class HefProducer {
         this.hefBroker = hefBroker;
     }
 
-    public boolean send(String topic, HefMessage<?> hefMessage) {
-        HefMessageQueue hefMessageQueue = hefBroker.findMessageQueue(topic);
-        checkState(Objects.nonNull(hefMessageQueue), "topic [%s] not found", topic);
-        return hefMessageQueue.send(hefMessage);
+    public boolean send(String topic, HefMessage<String> hefMessage) {
+        return hefBroker.send(topic, hefMessage);
     }
+
+
 }

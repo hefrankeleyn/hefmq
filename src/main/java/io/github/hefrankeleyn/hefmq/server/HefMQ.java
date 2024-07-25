@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.*;
 import com.google.common.collect.Maps;
 import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import io.github.hefrankeleyn.hefmq.model.MessageSubscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Objects;
@@ -19,8 +21,11 @@ public class HefMQ {
     private static final Map<String, MessageSubscription> subscriptionMap = Maps.newHashMap();
 
     private static final String DEFAULT_TOPIC = "com.hef.demo";
+    private static final Logger log = LoggerFactory.getLogger(HefMQ.class);
+
     static {
         topicMQMap.put(DEFAULT_TOPIC, new HefMQ(DEFAULT_TOPIC));
+        topicMQMap.put("aa", new HefMQ("aa"));
     }
 
     private String topic;
@@ -43,28 +48,24 @@ public class HefMQ {
 
     public static void subscribeTopic(String topic, String consumerId) {
         HefMQ hefMQ = topicMQMap.get(topic);
-        if (Objects.nonNull(hefMQ)) {
-            hefMQ.subscribe(topic, consumerId);
-        }
+        checkState(Objects.nonNull(hefMQ), "Topic not exists: %s", topic);
+        hefMQ.subscribe(topic, consumerId);
+        log.debug("====> subscribe topic:{}, consumerId: {}", topic, consumerId);
     }
 
     public static void unsubscribeTopic(String topic, String consumerId) {
         HefMQ hefMQ = topicMQMap.get(topic);
         checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
         hefMQ.unsubscribe(consumerId);
+        log.debug("====> unsubscribe topic: {}, consumerId: {}", topic, consumerId);
     }
 
     public static Integer sendMessage(String topic, HefMessage<?> message) {
         HefMQ hefMQ = topicMQMap.get(topic);
         checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
-        return hefMQ.send(message);
-    }
-
-    public static HefMessage<?> receiveMessage(String topic, String consumerId, Integer i) {
-        HefMQ hefMQ = topicMQMap.get(topic);
-        checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
-        checkState(Objects.nonNull(subscriptionMap.get(consumerId)), "Please subscribe topic first: %s", topic);
-        return hefMQ.receive(i);
+        int writeIndex = hefMQ.send(message);
+        log.debug("====> sendMessage topic:{},writeIndex:{}, message: {}", topic, writeIndex, message);
+        return writeIndex;
     }
 
     public static Integer ackMessage(String topic, String consumerId, Integer offset) {
@@ -74,6 +75,7 @@ public class HefMQ {
         MessageSubscription messageSubscription = subscriptionMap.get(consumerId);
         if (Objects.nonNull(offset) && offset>messageSubscription.getOffset() && offset<=hefMQ.getIndex()) {
             messageSubscription.setOffset(offset);
+            log.debug("====> ack message topic:{}, consumerId: {}, offset: {}", topic, consumerId, offset);
             return offset;
         }else {
             return -1;
@@ -91,7 +93,17 @@ public class HefMQ {
         checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
         checkState(Objects.nonNull(subscriptionMap.get(consumerId)), "Please subscribe topic first: %s", topic);
         MessageSubscription messageSubscription = subscriptionMap.get(consumerId);
-        return hefMQ.receive(messageSubscription.getOffset());
+        int readIndex = messageSubscription.getOffset() + 1;
+        return receiveMessage(topic, consumerId, readIndex);
+    }
+
+    public static HefMessage<?> receiveMessage(String topic, String consumerId, Integer readIndex) {
+        HefMQ hefMQ = topicMQMap.get(topic);
+        checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
+        checkState(Objects.nonNull(subscriptionMap.get(consumerId)), "Please subscribe topic first: %s", topic);
+        HefMessage<?> hefMessage = hefMQ.receive(readIndex);
+        log.debug("===> receive topic:{}, consumerId: {}, readIndex: {}, message: {}", topic, consumerId, readIndex, hefMessage);
+        return hefMessage;
     }
 
     /**
@@ -103,6 +115,7 @@ public class HefMQ {
         if (index>=queue.length) {
             return -1;
         }
+        hefMessage.getHeaders().put(HefMessage.OFFSET_KEY, String.valueOf(index));
         queue[index++] = hefMessage;
         return index;
     }
@@ -111,9 +124,9 @@ public class HefMQ {
      * 获取消息
      * @return
      */
-    public HefMessage<?> receive(int i) {
-        if (index>0 && i>=0 && i<=index) {
-            return queue[i];
+    public HefMessage<?> receive(int readIndex) {
+        if (index>0 && readIndex>=0 && readIndex<=index) {
+            return queue[readIndex];
         }
         return null;
     }
