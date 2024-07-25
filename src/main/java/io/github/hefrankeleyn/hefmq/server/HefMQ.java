@@ -2,12 +2,15 @@ package io.github.hefrankeleyn.hefmq.server;
 
 import com.google.common.base.MoreObjects;
 import static com.google.common.base.Preconditions.*;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import io.github.hefrankeleyn.hefmq.model.MessageSubscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -37,6 +40,8 @@ public class HefMQ {
     public HefMQ(String topic) {
         this.topic = topic;
     }
+
+
 
     public void subscribe(String topic, String consumerId) {
         subscriptionMap.putIfAbsent(consumerId, new MessageSubscription(topic, consumerId, -1));
@@ -82,6 +87,22 @@ public class HefMQ {
         }
     }
 
+    public static List<HefMessage<?>> batchReceiveMessage(String topic, String consumerId, Integer size) {
+        HefMQ hefMQ = topicMQMap.get(topic);
+        checkState(Objects.nonNull(hefMQ), "topic not exists: %s", topic);
+        checkState(Objects.nonNull(subscriptionMap.get(consumerId)), "Please subscribe topic first: %s", topic);
+        MessageSubscription messageSubscription = subscriptionMap.get(consumerId);
+        List<HefMessage<?>> result = Lists.newArrayList();
+        for (int i=0, readIndex = messageSubscription.getOffset() + 1; i<size; i++, readIndex++) {
+            HefMessage<?> hefMessage = receiveMessage(topic, consumerId, readIndex);
+            if (Objects.isNull(hefMessage)) {
+                break;
+            }
+            result.add(hefMessage);
+        }
+        return result;
+    }
+
     /**
      * 使用此方法，需要手动调用ack，更新offset
      * @param topic
@@ -125,7 +146,7 @@ public class HefMQ {
      * @return
      */
     public HefMessage<?> receive(int readIndex) {
-        if (index>0 && readIndex>=0 && readIndex<=index) {
+        if (index>0 && readIndex>=0 && readIndex<index) {
             return queue[readIndex];
         }
         return null;

@@ -22,7 +22,7 @@ public class SimpleMessageQueueTest {
     @Test
     public void test01() {
         String topic = "com.hef.demo";
-        HefBroker hefBroker = new HefBroker();
+        HefBroker hefBroker = HefBroker.instance();
 
         // 生产者
         HefProducer producer = hefBroker.createProducer();
@@ -35,12 +35,14 @@ public class SimpleMessageQueueTest {
         }).start();
 
 
+
+        HefConsumer consumer02 = hefBroker.createConsumer(topic);
+
+        consumer02.addMessageListener(hefMessage -> {
+            System.out.println("===> 监听到有一条消息： " + hefMessage.getBody());
+        });
         // 消费者
         HefConsumer consumer = hefBroker.createConsumer(topic);
-
-//        consumer.addMessageListener(hefMessage -> {
-//            System.out.println("===> 监听到有一条消息： " + hefMessage.getBody());
-//        });
         while (true) {
             try {
                 char c = (char) System.in.read();

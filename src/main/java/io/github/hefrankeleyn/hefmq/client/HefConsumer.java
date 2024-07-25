@@ -3,6 +3,8 @@ package io.github.hefrankeleyn.hefmq.client;
 import com.google.common.base.MoreObjects;
 import static com.google.common.base.Preconditions.*;
 import io.github.hefrankeleyn.hefmq.model.HefMessage;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,6 +18,8 @@ public class HefConsumer {
     private String id;
     private final HefBroker hefBroker;
     private String topic;
+
+    private HefMessageListener hefMessageListener;
 
     public HefConsumer(HefBroker hefBroker) {
         this.hefBroker = hefBroker;
@@ -39,6 +43,11 @@ public class HefConsumer {
         return hefBroker.receive(topic, id);
     }
 
+    public List<HefMessage<?>> batchReceive(int size) {
+        checkState(Objects.nonNull(topic) && !topic.isBlank(), "Please subscribe topic first: %s", topic);
+        return hefBroker.batchReceive(topic, id, size);
+    }
+
     public void ack(int offset) {
         checkState(Objects.nonNull(topic) && !topic.isBlank(), "Please subscribe topic first: %s", topic);
         hefBroker.ack(topic, id, offset);
@@ -53,6 +62,8 @@ public class HefConsumer {
     }
 
     public void addMessageListener(HefMessageListener hefMessageListener) {
+        this.hefMessageListener = hefMessageListener;
+        hefBroker.addConsumer(this);
     }
 
     public String getId() {
@@ -69,6 +80,10 @@ public class HefConsumer {
 
     public void setTopic(String topic) {
         this.topic = topic;
+    }
+
+    public HefMessageListener getHefMessageListener() {
+        return hefMessageListener;
     }
 
     @Override

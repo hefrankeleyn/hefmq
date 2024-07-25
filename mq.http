@@ -30,8 +30,15 @@ Content-Type: application/json
 }
 
 
+### batchReceive
+POST http://localhost:8765/hefmq/batchReceive?topic=com.hef.demo&consumerId=consumer-1&size=3
+Content-Type: application/json
+
+{
+}
+
 ### ack
-POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=2
+POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=3
 Content-Type: application/json
 
 {

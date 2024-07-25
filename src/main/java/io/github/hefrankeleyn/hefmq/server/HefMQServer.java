@@ -5,6 +5,9 @@ import io.github.hefrankeleyn.hefmq.model.HefMessage;
 import io.github.hefrankeleyn.hefmq.model.Result;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Objects;
+
 /**
  * @Date 2024/7/22
  * @Author lifei
@@ -24,6 +27,15 @@ public class HefMQServer {
     @RequestMapping(value = "/receive", method = RequestMethod.POST)
     public Result<HefMessage<?>> receive(String topic, String consumerId) {
         return Result.ok(HefMQ.receiveMessage(topic, consumerId));
+    }
+
+    // batchReceive
+    @RequestMapping(value = "/batchReceive", method = RequestMethod.POST)
+    public Result<List<HefMessage<?>>> batchReceive(String topic, String consumerId, Integer size) {
+        if (Objects.isNull(size) || size<=0) {
+            size = 100;
+        }
+        return Result.ok(HefMQ.batchReceiveMessage(topic, consumerId, size));
     }
 
     // subscribe
