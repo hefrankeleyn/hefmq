@@ -36,6 +36,10 @@ public class HefMessage<M> {
         this.body = body;
     }
 
+    public static <T> HefMessage<T> createHefMessage(T body) {
+        return new HefMessage<>(body);
+    }
+
 
 
     public Long getId() {
