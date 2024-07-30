@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### 补充：数据文件不用同步到git
+*.bat

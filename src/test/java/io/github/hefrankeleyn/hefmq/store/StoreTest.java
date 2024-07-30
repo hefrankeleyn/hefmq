@@ -71,7 +71,7 @@ public class StoreTest {
                         continue;
                     }
                     Integer offset = indexOffsetMap.get(index);
-                    Indexer.Entry entry = Indexer.getEntry(offset);
+                    Indexer.Entry entry = Indexer.getEntry(topic, offset);
                     readOnlyBuffer.position(offset);
                     byte[] resBytes = new byte[entry.getLen()];
                     readOnlyBuffer.get(resBytes);
@@ -134,5 +134,14 @@ public class StoreTest {
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void test03() {
+        String res = String.format("%010d", 10);
+        String res02 = Strings.padStart(String.valueOf(10), 10, '0');
+        System.out.println(res);
+        System.out.println(res02);
+        System.out.println(res.equals(res02));
     }
 }

@@ -1,10 +1,10 @@
 ### send
-POST http://localhost:8765/hefmq/send?topic=aa
+POST http://localhost:8765/hefmq/send?topic=com.hef.demo
 Content-Type: application/json
 
 {
-  "id": 4,
-  "body": "hello mq!"
+  "id": 1,
+  "body": "hello mq demo!"
 }
 
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 }
 
 ### ack
-POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=3
+POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=0
 Content-Type: application/json
 
 {

@@ -14,7 +14,7 @@ import java.util.Map;
 public class Indexer {
 
     private static final MultiValueMap<String, Entry> topicEntryMap = new LinkedMultiValueMap<>();
-    private static final Map<Integer, Entry> offsetEntryMap = Maps.newHashMap();
+    private static final Map<String,Map<Integer, Entry>> offsetEntryMap = Maps.newHashMap();
 
     public static class Entry {
         private Integer offset;
@@ -49,14 +49,15 @@ public class Indexer {
     public static void addEntry(String topic, Integer offset, Integer len) {
         Entry entry = new Entry(offset, len);
         topicEntryMap.add(topic, entry);
-        offsetEntryMap.put(entry.getOffset(), entry);
+        offsetEntryMap.putIfAbsent(topic, Maps.newHashMap());
+        offsetEntryMap.get(topic).put(offset, entry);
     }
 
     public static List<Entry> getEntries(String topic) {
         return topicEntryMap.get(topic);
     }
 
-    public static Entry getEntry(Integer offset) {
-        return offsetEntryMap.get(offset);
+    public static Entry getEntry(String topic, Integer offset) {
+        return offsetEntryMap.get(topic).get(offset);
     }
 }
