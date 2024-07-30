@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -66,14 +67,24 @@ public class HefStore {
         return mappedByteBuffer.position();
     }
 
+    private static final Integer MESSAGE_MAX_BYTES_LEN = 10;
+    private static final char PAD_CHAR = '0';
+
     // 写操作, 返回写入的位置
     public int write(HefMessage<?> hefMessage) {
         checkState(Objects.nonNull(mappedByteBuffer), "Please init MappedByteBuffer first");
         int offset = this.mappedByteBuffer.position();
-        byte[] bytes = gson.toJson(hefMessage).getBytes(StandardCharsets.UTF_8);
+        String mess = gson.toJson(hefMessage);
+        byte[] bytes = mess.getBytes(StandardCharsets.UTF_8);
         int messageLen = bytes.length;
-        Indexer.addEntry(topic, offset, messageLen);
-        this.mappedByteBuffer.put(bytes);
+        // 假设每条消息的长度最大长度为 10_0000_0000
+        String lenPrefix = Strings.padStart(String.valueOf(messageLen), MESSAGE_MAX_BYTES_LEN, PAD_CHAR);
+        String finalMessage = lenPrefix + mess;
+        byte[] finalBytes = finalMessage.getBytes(StandardCharsets.UTF_8);
+        int finalLen = finalBytes.length;
+        // 写入内容
+        Indexer.addEntry(topic, offset, finalLen);
+        this.mappedByteBuffer.put(finalBytes);
         return offset;
     }
 
@@ -87,7 +98,9 @@ public class HefStore {
         }
         byte[] bytes = new byte[entry.getLen()];
         byteBuffer.get(bytes);
-        String res = new String(bytes, StandardCharsets.UTF_8);
+        // 前十位是消息的长度
+        byte[] messageBytes = Arrays.copyOfRange(bytes, MESSAGE_MAX_BYTES_LEN, bytes.length);
+        String res = new String(messageBytes, StandardCharsets.UTF_8);
         TypeToken<HefMessage<?>> typeToken = new TypeToken<>(){};
         return gson.fromJson(res, typeToken.getType());
     }

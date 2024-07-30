@@ -1,5 +1,5 @@
 ### send
-POST http://localhost:8765/hefmq/send?topic=com.hef.demo
+POST http://localhost:8765/hefmq/send?topic=aa
 Content-Type: application/json
 
 {
