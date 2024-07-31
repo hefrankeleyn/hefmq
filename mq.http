@@ -3,13 +3,13 @@ POST http://localhost:8765/hefmq/send?topic=aa
 Content-Type: application/json
 
 {
-  "id": 1,
+  "id": 3,
   "body": "hello mq demo!"
 }
 
 
 ### subscribe
-POST http://localhost:8765/hefmq/subscribe?topic=aa&consumerId=cs01
+POST http://localhost:8765/hefmq/subscribe?topic=com.hef.demo&consumerId=cs01
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### receive
-POST http://localhost:8765/hefmq/receive?topic=aa&consumerId=cs01
+POST http://localhost:8765/hefmq/receive?topic=com.hef.demo&consumerId=cs01
 Content-Type: application/json
 
 {
@@ -31,14 +31,14 @@ Content-Type: application/json
 
 
 ### batchReceive
-POST http://localhost:8765/hefmq/batchReceive?topic=com.hef.demo&consumerId=consumer-1&size=3
+POST http://localhost:8765/hefmq/batchReceive?topic=com.hef.demo&consumerId=cs01&size=5
 Content-Type: application/json
 
 {
 }
 
 ### ack
-POST http://localhost:8765/hefmq/ack?topic=aa&consumerId=cs01&offset=0
+POST http://localhost:8765/hefmq/ack?topic=com.hef.demo&consumerId=cs01&offset=1073
 Content-Type: application/json
 
 {

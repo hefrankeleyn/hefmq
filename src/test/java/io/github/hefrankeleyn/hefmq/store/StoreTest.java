@@ -144,4 +144,11 @@ public class StoreTest {
         System.out.println(res02);
         System.out.println(res.equals(res02));
     }
+
+    @Test
+    public void test04() {
+        String message = "0000000102";
+        boolean matches = message.matches("^[0-9]+$");
+        System.out.println(matches);
+    }
 }

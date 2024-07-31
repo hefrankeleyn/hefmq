@@ -6,6 +6,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Date 2024/7/30
@@ -58,6 +59,10 @@ public class Indexer {
     }
 
     public static Entry getEntry(String topic, Integer offset) {
-        return offsetEntryMap.get(topic).get(offset);
+        Map<Integer, Entry> topicEntryMap = offsetEntryMap.get(topic);
+        if (Objects.isNull(topicEntryMap)) {
+            return null;
+        }
+        return topicEntryMap.get(offset);
     }
 }

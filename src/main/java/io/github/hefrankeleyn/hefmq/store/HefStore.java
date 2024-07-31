@@ -28,6 +28,9 @@ public class HefStore {
     private static final Logger log = LoggerFactory.getLogger(HefStore.class);
     private final String topic;
     public static final Integer LEN = 1024 * 1024;
+    private static final Integer MESSAGE_MAX_BYTES_LEN = 10;
+    private static final char PAD_CHAR = '0';
+    private static final String MATCH_NUM_REGEX = "^[0-9]*$";
     private MappedByteBuffer mappedByteBuffer;
     private final Gson gson = new Gson();
 
@@ -58,17 +61,43 @@ public class HefStore {
         try (FileChannel fileChannel = (FileChannel) Files.newByteChannel(path, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
             this.mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, LEN);
             // 判断有没有数据，找到数据结尾
+            int offset = loadTopicFileDataFindOffset();
+            this.mappedByteBuffer.position(offset);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * 加载topic文件数据，并找到数据结尾的偏移量
+     * @return
+     */
+    private int loadTopicFileDataFindOffset() {
+        int offset = 0;
+        ByteBuffer readOnlyBuffer = this.mappedByteBuffer.asReadOnlyBuffer();
+        while (true) {
+            readOnlyBuffer.position(offset);
+            byte[] bytes = new byte[MESSAGE_MAX_BYTES_LEN];
+            readOnlyBuffer.get(bytes);
+            String message = new String(bytes, StandardCharsets.UTF_8);
+            if (!message.matches(MATCH_NUM_REGEX)) {
+                break;
+            }
+            int messageLen = Integer.parseInt(message);
+            if (messageLen<=0) {
+                break;
+            }
+            int oneMessageLen = MESSAGE_MAX_BYTES_LEN + messageLen;
+            Indexer.addEntry(topic, offset, oneMessageLen);
+            offset += oneMessageLen;
+        }
+        return offset;
+    }
+
+
     public int writeOffset() {
         return mappedByteBuffer.position();
     }
-
-    private static final Integer MESSAGE_MAX_BYTES_LEN = 10;
-    private static final char PAD_CHAR = '0';
 
     // 写操作, 返回写入的位置
     public int write(HefMessage<?> hefMessage) {

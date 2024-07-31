@@ -29,6 +29,7 @@ public class HefMQ {
     private static final Logger log = LoggerFactory.getLogger(HefMQ.class);
 
     static {
+        System.out.println("====================>  HefMQ static 执行");
         topicMQMap.put(DEFAULT_TOPIC, new HefMQ(DEFAULT_TOPIC));
         topicMQMap.put("aa", new HefMQ("aa"));
     }
